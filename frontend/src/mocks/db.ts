@@ -45,7 +45,7 @@ let nextVersion = 1
 
 /**
  * In-memory stand-in for the Kotlin service. It enforces the same invariants the real
- * backend must: no duplicate providers, and never accept an incomplete submission.
+ * backend does: no duplicate providers, and never accept an incomplete submission.
  */
 export function createMockDb({ now, knownProviders, accounts: seed }: MockDbOptions) {
   const providersById = new Map(knownProviders.map((p) => [p.id, p]))

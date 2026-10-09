@@ -7,19 +7,20 @@ React 18 + TypeScript, TanStack Query, Zod, Tailwind v4, Vitest + Testing Librar
 ```bash
 pnpm install
 pnpm dev         # http://localhost:5173, MSW plays the backend
+pnpm dev:backend # the same, against the Kotlin service on :8080 (see ../backend)
 pnpm test        # Vitest (unit + hook + component)
 pnpm typecheck && pnpm lint && pnpm build
 ```
 
 ## Backend
 
-Until the Kotlin service exists, MSW intercepts `/api/*` in the browser and serves an in-memory backend (`src/mocks`):
+By default, MSW intercepts `/api/*` in the browser and serves an in-memory backend (`src/mocks`):
 
 - Starts with four providers already added (out of a catalogue of 19), covering every status. Each seeded statement has a generated placeholder PDF, so it can be opened.
 - Uploaded files are kept in memory, and everything resets on page reload.
 - Every request takes about 500 ms, so loading states are visible.
 
-Set `VITE_API_BASE_URL=http://localhost:8080` to use a real backend instead. The API contract is in [`../NOTES.md`](../NOTES.md).
+`pnpm dev:backend` uses the Kotlin service instead (`VITE_API_BASE_URL` from `.env.backend`); start it first with `./gradlew bootRun` in `../backend`. The API contract is in [`../NOTES.md`](../NOTES.md).
 
 ## Structure
 

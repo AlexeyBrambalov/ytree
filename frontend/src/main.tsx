@@ -4,7 +4,7 @@ import App from './App'
 import './index.css'
 
 async function enableMocking() {
-  // Until the Kotlin service exists, MSW plays the backend. Set VITE_API_BASE_URL to use a real one.
+  // MSW plays the backend unless VITE_API_BASE_URL points at the Kotlin service (`pnpm dev:backend`).
   if (import.meta.env.VITE_API_BASE_URL) return
   const { worker } = await import('./mocks/browser')
   await worker.start({ onUnhandledRequest: 'bypass' })

@@ -2,7 +2,7 @@ import { delay, http, HttpResponse } from 'msw'
 import { AddProvidersRequestSchema, UploadStatementRequestSchema } from '../api/schemas'
 import { MockDbError, type MockDb } from './db'
 
-/** Maps the in-memory db onto the HTTP contract the Kotlin service will implement. */
+/** Maps the in-memory db onto the same HTTP contract the Kotlin service implements. */
 export function createHandlers(db: MockDb, { latencyMs = 0 } = {}) {
   const simulateLatency = async () => {
     if (latencyMs) await delay(latencyMs)

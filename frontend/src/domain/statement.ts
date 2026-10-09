@@ -38,7 +38,7 @@ export function localIsoDate(date: Date): string {
 
 /**
  * Status rules. The backend is the source of truth for status; this mirrors it so the
- * mock API (and later the Kotlin service) apply the same rule.
+ * mock API applies the same rule as the Kotlin service (`statementStatus` in ../backend).
  */
 export function getStatementStatus(
   statement: { statementDate: string } | null,
