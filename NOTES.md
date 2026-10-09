@@ -51,8 +51,16 @@ Backend (`./gradlew test`), 24 tests:
 - `AccountServiceTest`: the invariants. No duplicates (a batch with one adds nothing), submission refused with every problem listed or with no accounts, accepted once all are current, and upload validation.
 - `ApiTest`: the HTTP contract, run against the whole app. It checks the JSON shapes the Zod schemas expect, the 400/404/409/422 bodies, multipart upload and download, and the reject → fix → accept submit flow.
 
+End-to-end (`pnpm e2e` in `frontend/`), 25 Playwright tests. Each one drives the real frontend against the real backend:
+- Every interaction in the brief: see statuses and progress, filter (including the "nothing matches" state), add several providers through search (already-added ones are never offered), remove (and cancel), upload, replace, and open a statement.
+- Every rule: the submit button stays blocked until all statements are current; an old date is warned about and stays `OUTDATED`; client-side file and date validation works.
+- The cases that need the real server: a provider added from elsewhere is refused (409, shown in the dialog). A submission that went stale behind the screen is refused, explained, then accepted once fixed. The API refuses incomplete or empty submissions and bad uploads when called directly, which is the "even if the client finds a way around the screen" rule.
+- Each test resets the backend through `POST /api/e2e/reset`, which exists only with the `e2e` profile. Tests run one at a time, because there is one shared in-memory client.
+- Elements are found only by `data-qa` tags. The tags are constants in `src/helpers/qa.ts`, used by both the components (`data-qa={QA.submitButton}`) and the tests (`getByTestId(QA.submitButton)`, with Playwright's `testIdAttribute` set to `data-qa`). Changing copy or markup doesn't break a locator, and a renamed tag is a type error, not a silently broken test. The tests still assert the visible text where the text is the behaviour. A page object (`e2e/support.ts`) keeps the specs readable.
+- To check that the tests can fail, I removed the server's submit check: the stale-screen and API submit tests failed.
+
 ## With more time
-- A Playwright e2e test of the submit flow against the real backend.
+- Run the e2e tests in CI (GitHub Actions), and in Firefox and WebKit too.
 - A database (Postgres + Flyway) behind a repository, and statement files in object storage with signed `fileUrl`s.
 - A content check on uploads (magic bytes, not just the extension).
 - Reading the statement date from the document, and a virus scan on upload.

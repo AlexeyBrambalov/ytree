@@ -48,10 +48,19 @@ pnpm dev:backend
 ## Tests
 
 ```bash
-cd backend && ./gradlew test                                   # 24 tests: status rule, business rules, HTTP API
+cd backend && ./gradlew test                                   # 25 tests: status rule, business rules, HTTP API
 cd frontend && pnpm test                                       # 91 tests: domain rules, hooks, user flows
+cd frontend && pnpm e2e                                        # 25 Playwright tests: real browser + real backend
 cd frontend && pnpm typecheck && pnpm lint && pnpm build       # type check, lint, production build
 ```
+
+**End-to-end tests (Playwright).** `pnpm e2e` starts its own backend (on `:8081`, with the `e2e` profile) and frontend (on `:5174`), runs the tests in Chromium, then stops both. It can run while `./dev.sh` is up.
+
+- First time only: `cd frontend && pnpm exec playwright install chromium`, which downloads the test browser.
+- `pnpm e2e:ui` opens Playwright's UI, to watch the tests run step by step.
+- Each test resets the backend to the demo data first, through `POST /api/e2e/reset`. That endpoint only exists with the `e2e` profile.
+- The tests are in `frontend/e2e/`, grouped into providers, statements and submit. `support.ts` holds the page object and the API helpers.
+- Tests find elements by `data-qa` tags. The tags are constants in `frontend/src/helpers/qa.ts`, shared by the components and the tests. To test a new element, add a constant there, set `data-qa={QA.yourTag}` on the element, and use `getByTestId(QA.yourTag)`.
 
 ## Try the API directly
 
@@ -78,4 +87,5 @@ frontend/       React app: rules in src/domain, logic in src/hooks, rendering in
 - **`java: command not found`, or `JAVA_HOME is not set`:** install a JDK (see Prerequisites), then open a new terminal.
 - **`Port 8080 is already in use`:** something else is running there, often an earlier backend. Find it with `lsof -i :8080` and stop it.
 - **The page shows "Could not reach the server":** the backend isn't running. Start it, or use `./dev.sh`.
+- **Playwright says the browser is missing:** run `pnpm exec playwright install chromium` in `frontend/`.
 - **Port 5173 is busy:** Vite picks the next free port and prints it. Open that one instead. The backend only allows requests from `http://localhost:5173`, so free that port, or add the new address to `app.cors.allowed-origins` in `backend/src/main/resources/application.properties`.

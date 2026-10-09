@@ -7,6 +7,7 @@ export default defineConfig({
   plugins: [react(), tailwindcss()],
   test: {
     environment: 'jsdom',
+    include: ['src/**/*.test.{ts,tsx}'], // e2e/ is Playwright's
     globals: true,
     setupFiles: ['./src/test/setup.ts'],
     css: false,
