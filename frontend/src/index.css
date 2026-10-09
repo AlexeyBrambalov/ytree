@@ -1,0 +1,59 @@
+@import "tailwindcss";
+
+/* YTREE brand (from their careers site): navy #1C1E3C, cyan #36C6D9, Rubik + Inter, pill buttons. */
+@theme {
+  --font-sans: "Inter", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  --font-display: "Rubik", "Inter", system-ui, sans-serif;
+
+  --color-navy-50: #f2f3f8;
+  --color-navy-100: #e3e5ef;
+  --color-navy-300: #9a9db8;
+  --color-navy-500: #55597e;
+  --color-navy-700: #2d3060;
+  --color-navy-900: #1c1e3c;
+
+  --color-cyan-50: #e9f9fb;
+  --color-cyan-100: #c9f0f5;
+  --color-cyan-400: #36c6d9;
+  --color-cyan-700: #11798a; /* text-safe cyan on white */
+
+  --color-canvas: #f6f7fb;
+  --color-line: #e4e6ee;
+  --color-muted: #5b5e78;
+
+  /* Type scale additions */
+  --text-control: 13px; /* buttons, chips */
+  --text-control--line-height: 1.25rem;
+  --tracking-eyebrow: 0.14em;
+
+  --color-ok-50: #e8f6ef;
+  --color-ok-600: #1f7a52;
+  --color-warn-50: #fdf3e2;
+  --color-warn-600: #9a5b00;
+  --color-bad-50: #fcebec;
+  --color-bad-600: #b42335;
+  --color-danger: #dc2626; /* bright red for "still needed" calls to action */
+}
+
+/* Layout utilities (variants like sm: work automatically). */
+@utility grid-cols-account-row {
+  grid-template-columns: 1fr auto;
+}
+@utility grid-cols-account-row-wide {
+  /* name · status · file · date · actions. Fixed tracks keep columns aligned across rows. */
+  grid-template-columns: minmax(0, 1fr) 6rem minmax(0, 1fr) 8.5rem minmax(8.5rem, auto);
+}
+@utility max-h-dialog {
+  max-height: 90vh;
+}
+@utility transition-width {
+  transition-property: width;
+  transition-timing-function: var(--default-transition-timing-function);
+  transition-duration: var(--default-transition-duration);
+}
+
+@layer base {
+  html { -webkit-text-size-adjust: 100%; }
+  body { @apply bg-canvas font-sans text-navy-900 antialiased; }
+  :focus-visible { @apply outline-2 outline-offset-2 outline-cyan-400; }
+}
