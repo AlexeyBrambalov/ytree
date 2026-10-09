@@ -108,6 +108,14 @@ class AccountService(private val clock: Clock) {
         return clock.instant()
     }
 
+    /** Back to no accounts and the first ids, so every e2e test starts from the same demo data. */
+    @Synchronized
+    fun reset() {
+        accounts.clear()
+        nextAccountId = 1
+        nextFileVersion = 1
+    }
+
     private fun today(): LocalDate = LocalDate.now(clock)
 
     private fun findAccount(accountId: String): Account =

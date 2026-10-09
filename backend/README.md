@@ -5,7 +5,7 @@ The service behind "Connect your accounts". It is built with Kotlin 2.3, Spring 
 ```bash
 sudo apt install openjdk-21-jdk   # once; any JDK 21+ works
 ./gradlew bootRun                 # http://localhost:8080 (the first run downloads Gradle and the dependencies)
-./gradlew test                    # 24 tests
+./gradlew test                    # 25 tests
 ```
 
 Then, in `../frontend`, run `pnpm dev:backend` to use this service instead of the MSW mock. Or run `../dev.sh` to start both with one command. The API contract is in [`../NOTES.md`](../NOTES.md).
@@ -29,6 +29,7 @@ Everything is in one package, `src/main/kotlin/com/ytree/accounts/`:
 | `ApiException.kt` | The exceptions the service throws. Each carries an HTTP status. |
 | `KnownProviders.kt` | The catalogue of 19 providers. |
 | `DemoData.kt` | Seeds four accounts on startup, one for each status, with a generated placeholder PDF. |
+| `E2eController.kt` | `POST /api/e2e/reset`, for the Playwright tests. It only exists with the `e2e` profile. |
 | `WebConfig.kt` | CORS, so the Vite dev server on :5173 may call the API. |
 | `BackendApplication.kt` | The entry point. It also provides the `Clock`, so tests can fix "today". |
 

@@ -144,6 +144,11 @@ class ApiTest(@Autowired private val mockMvc: MockMvc) {
     }
 
     @Test
+    fun `has no e2e reset endpoint outside the e2e profile`() {
+        mockMvc.post("/api/e2e/reset").andExpect { status { isNotFound() } }
+    }
+
+    @Test
     fun `refuses an incomplete submission, then accepts it once every statement is current`() {
         mockMvc.post("/api/submission").andExpect {
             status { isUnprocessableContent() }

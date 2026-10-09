@@ -13,7 +13,9 @@ import java.time.LocalDate
 @Component
 class DemoData(private val accounts: AccountService, private val clock: Clock) : ApplicationRunner {
 
-    override fun run(args: ApplicationArguments) {
+    override fun run(args: ApplicationArguments) = seed()
+
+    fun seed() {
         val today = LocalDate.now(clock)
         val added = accounts.addProviders(listOf("barclays", "hsbc", "vanguard", "fidelity"))
         val idOf = added.associate { it.provider.id to it.id }
