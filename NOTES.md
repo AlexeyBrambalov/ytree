@@ -46,7 +46,7 @@ Frontend (TDD; tests were written before each implementation step), 91 tests:
 - `hooks/*.test.tsx`: every hook, including the per-component ones (`useAccountsScreen`, `useAccountRow`, `useAddProvidersDialog`, `useUploadStatementDialog`, `useModal`, `useToastQueue`), run against MSW. Covers optimistic remove with rollback (including concurrent removes), multi-add, the submit 422 path, and form validation.
 - `components/AccountsScreen.test.tsx`: user-level flows. Covers loading and error/retry, filtering, multi-add, remove, upload to submit, and a submission rejected because the screen was stale.
 
-Backend (`./gradlew test`), 24 tests:
+Backend (`./gradlew test`), 25 tests:
 - `StatementStatusTest`: the 3-month boundary and month-end clamping. These are the same cases as the frontend's mirror of the rule.
 - `AccountServiceTest`: the invariants. No duplicates (a batch with one adds nothing), submission refused with every problem listed or with no accounts, accepted once all are current, and upload validation.
 - `ApiTest`: the HTTP contract, run against the whole app. It checks the JSON shapes the Zod schemas expect, the 400/404/409/422 bodies, multipart upload and download, and the reject → fix → accept submit flow.
