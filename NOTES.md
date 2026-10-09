@@ -2,7 +2,11 @@
 
 ## Status
 - **Frontend:** done (`frontend/`). React 18 + TypeScript, TanStack Query, Zod, Tailwind v4, Vitest + Testing Library, MSW.
-- **Backend:** Kotlin/Spring Boot — to do. Until it exists, MSW plays the backend (`frontend/src/mocks`), implementing the contract below.
+- **Backend:** done (`backend/`). Kotlin 2.3, Spring Boot 4, JDK 21, in-memory, JUnit 5 + MockMvc.
+- MSW (`frontend/src/mocks`) implements the same contract, so the frontend runs on its own as well.
+
+## Running
+`./dev.sh` runs both. Prerequisites, separate runs and tests are in [README.md](README.md).
 
 ## API contract
 | Method | Path | Body | Response |
@@ -28,19 +32,29 @@
 - **The provider search runs on the client.** The catalogue is small and fetched once (`staleTime: Infinity`), so the search feels instant. Already-added providers are excluded both in the picker and by the server (409).
 - **An upload asks for a statement date.** The brief treats an upload as "a file name and a date". Asking for the date (default today, no future dates) is what makes `OUTDATED` meaningful.
 - **Uploaded statements open in a new tab.** The file name links to the file. A click fetches it through the API client (the same auth and error handling as every other call, and a plain link would skip the mock backend) and shows it from memory. The tab is opened during the click so pop-up blockers allow it.
+- **Backend kept small: one package, one service.** `AccountService` holds every rule and the in-memory state. `ApiController` only translates HTTP. Errors are exceptions carrying an HTTP status, mapped to `{ message }` in one place (`ApiErrorHandler`). A layered setup (repository interfaces, JPA, DTO mappers) would be ceremony for one client with no database. The service is the seam where a repository would go.
+- **In-memory, with `@Synchronized` methods.** The brief has one client and no persistence, so there is no database. Synchronising the service means two concurrent adds can't both slip past the duplicate check. State resets on restart, and the demo data is re-seeded relative to today.
+- **"Today" is UTC, from an injected `Clock`.** Tests pin the date. The server accepts a statement dated up to one day ahead, because the client's "today" is their local day, which can be ahead of UTC.
+- **The server serves files with a content type it chose.** The type comes from the allowed extension, never from the client's header, with `Cache-Control: no-store`. The `?v=` in `fileUrl` changes with each upload.
 - **Theme:** YTREE brand from their careers site — navy `#1C1E3C`, cyan `#36C6D9`, Rubik/Inter, pill buttons.
 
-## Testing (TDD)
-Tests were written before each implementation step. There are 91 tests in total:
+## Testing
+Frontend (TDD; tests were written before each implementation step), 91 tests:
 - `domain/*.test.ts`: the 3-month boundary (including month-end clamping), readiness, filters, search, and problem clearing.
 - `mocks/db.test.ts`: the backend invariants (no duplicates; incomplete, outdated or empty submissions are refused).
 - `helpers/*.test.ts`: date formatting, pluralisation and problem wording.
 - `hooks/*.test.tsx`: every hook, including the per-component ones (`useAccountsScreen`, `useAccountRow`, `useAddProvidersDialog`, `useUploadStatementDialog`, `useModal`, `useToastQueue`), run against MSW. Covers optimistic remove with rollback (including concurrent removes), multi-add, the submit 422 path, and form validation.
 - `components/AccountsScreen.test.tsx`: user-level flows. Covers loading and error/retry, filtering, multi-add, remove, upload to submit, and a submission rejected because the screen was stale.
 
+Backend (`./gradlew test`), 24 tests:
+- `StatementStatusTest`: the 3-month boundary and month-end clamping. These are the same cases as the frontend's mirror of the rule.
+- `AccountServiceTest`: the invariants. No duplicates (a batch with one adds nothing), submission refused with every problem listed or with no accounts, accepted once all are current, and upload validation.
+- `ApiTest`: the HTTP contract, run against the whole app. It checks the JSON shapes the Zod schemas expect, the 400/404/409/422 bodies, multipart upload and download, and the reject → fix → accept submit flow.
+
 ## With more time
-- The Kotlin service, implementing the contract above, with tests on the status rule and the submit invariant.
 - A Playwright e2e test of the submit flow against the real backend.
+- A database (Postgres + Flyway) behind a repository, and statement files in object storage with signed `fileUrl`s.
+- A content check on uploads (magic bytes, not just the extension).
 - Reading the statement date from the document, and a virus scan on upload.
 - A focus trap in the modal (or Radix Dialog), and an undo toast for remove instead of the confirm step.
 - Persisting the submitted state on the server (`GET /api/submission`) so a reload shows it.
