@@ -1,6 +1,7 @@
 import { useId } from 'react'
 import type { Account } from '../api/schemas'
 import { MAX_STATEMENT_FILE_MB, STATEMENT_FILE_EXTENSIONS } from '../domain/statement'
+import { QA } from '../helpers/qa'
 import { useUploadStatementDialog } from '../hooks/useUploadStatementDialog'
 import { Button } from './ui/Button'
 import { Modal } from './ui/Modal'
@@ -20,13 +21,14 @@ export function UploadStatementDialog({ account, today, onClose }: Props) {
 
   return (
     <Modal
+      qa={QA.uploadDialog}
       title={title}
       description={description}
       onClose={onClose}
       footer={
         <>
-          <Button variant="ghost" onClick={onClose}>Cancel</Button>
-          <Button variant="primary" type="submit" form={formId} loading={isSaving}>Save statement</Button>
+          <Button variant="ghost" data-qa={QA.uploadCancelButton} onClick={onClose}>Cancel</Button>
+          <Button variant="primary" type="submit" form={formId} data-qa={QA.uploadSaveButton} loading={isSaving}>Save statement</Button>
         </>
       }
     >
@@ -44,6 +46,7 @@ export function UploadStatementDialog({ account, today, onClose }: Props) {
             <span className="text-sm font-medium">Statement file</span>
             <input
               type="file"
+              data-qa={QA.statementFileInput}
               accept={STATEMENT_FILE_EXTENSIONS.join(',')}
               aria-invalid={!!form.errors.file}
               aria-describedby={fileHintId}
@@ -59,6 +62,7 @@ export function UploadStatementDialog({ account, today, onClose }: Props) {
             <span className="text-sm font-medium">Statement date</span>
             <input
               type="date"
+              data-qa={QA.statementDateInput}
               value={form.values.statementDate}
               max={form.todayIso}
               aria-invalid={!!form.errors.statementDate}
@@ -70,7 +74,7 @@ export function UploadStatementDialog({ account, today, onClose }: Props) {
           <DateHint id={dateHintId} error={form.errors.statementDate} warning={dateWarning} />
         </div>
 
-        {saveError && <p role="alert" className="rounded-2xl bg-bad-50 px-4 py-2 text-sm text-bad-600">{saveError.message}</p>}
+        {saveError && <p role="alert" data-qa={QA.uploadError} className="rounded-2xl bg-bad-50 px-4 py-2 text-sm text-bad-600">{saveError.message}</p>}
       </form>
     </Modal>
   )
@@ -78,13 +82,13 @@ export function UploadStatementDialog({ account, today, onClose }: Props) {
 
 /** The file field shows what it accepts until there is something wrong with the chosen file. */
 function FileHint({ id, error }: { id: string; error?: string }) {
-  if (error) return <p id={id} className="mt-1 text-sm text-bad-600">{error}</p>
-  return <p id={id} className="mt-1 text-xs text-muted">PDF, PNG or JPEG, up to {MAX_STATEMENT_FILE_MB} MB.</p>
+  if (error) return <p id={id} data-qa={QA.statementFileHint} className="mt-1 text-sm text-bad-600">{error}</p>
+  return <p id={id} data-qa={QA.statementFileHint} className="mt-1 text-xs text-muted">PDF, PNG or JPEG, up to {MAX_STATEMENT_FILE_MB} MB.</p>
 }
 
 /** The date field shows either its validation error or the "won't count" warning, never both. */
 function DateHint({ id, error, warning }: { id: string; error?: string; warning: string | null }) {
-  if (error) return <p id={id} className="mt-1 text-sm text-bad-600">{error}</p>
-  if (warning) return <p id={id} className="mt-1 text-sm text-warn-600">{warning}</p>
+  if (error) return <p id={id} data-qa={QA.statementDateHint} className="mt-1 text-sm text-bad-600">{error}</p>
+  if (warning) return <p id={id} data-qa={QA.statementDateHint} className="mt-1 text-sm text-warn-600">{warning}</p>
   return null
 }

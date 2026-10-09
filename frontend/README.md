@@ -40,6 +40,7 @@ src/
 - **The server owns status.** The client mirrors the rules in `domain/` only to guide the user (the disabled submit button with its reason, the "will be outdated" warning). Mutations return the full account list.
 - **Zod at the boundary.** Every response is parsed. The same schemas validate request bodies in the mock backend and in the upload form.
 - **View states are unions.** Each hook derives `'loading' | 'error' | 'empty' | …` with an `if` chain in priority order. The component renders it with a `switch` ending in `assertNever`, so adding a state fails the build until it is handled.
+- **`data-qa` tags for e2e.** Elements the Playwright tests use carry `data-qa={QA.…}`. The constants are in `helpers/qa.ts`, which the tests import too.
 - **Statements open through the API.** A click on a file name fetches the file with the API client and shows it in a new tab (`useOpenStatement`). A plain link would bypass auth and MSW.
 
 ## Testing

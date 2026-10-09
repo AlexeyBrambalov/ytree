@@ -1,5 +1,6 @@
 import { readinessPercent, type Readiness } from '../domain/readiness'
 import { MAX_STATEMENT_AGE_MONTHS } from '../domain/statement'
+import { QA } from '../helpers/qa'
 
 export function ReadinessHeader({ readiness }: { readiness: Readiness }) {
   return (
@@ -7,7 +8,7 @@ export function ReadinessHeader({ readiness }: { readiness: Readiness }) {
       <p className="text-xs font-semibold tracking-eyebrow text-cyan-700 uppercase">Onboarding · Step 2</p>
       <div className="flex flex-wrap items-end justify-between gap-3">
         <h1 className="font-display text-3xl font-semibold tracking-tight sm:text-4xl">Connect your accounts</h1>
-        <p className="text-sm font-medium text-muted tabular-nums">
+        <p data-qa={QA.readinessCount} className="text-sm font-medium text-muted tabular-nums">
           {readiness.ready} of {readiness.total} ready
         </p>
       </div>
@@ -16,6 +17,7 @@ export function ReadinessHeader({ readiness }: { readiness: Readiness }) {
       </p>
       <div
         role="progressbar"
+        data-qa={QA.readinessProgress}
         aria-label="Statements ready"
         aria-valuemin={0}
         aria-valuemax={readiness.total}

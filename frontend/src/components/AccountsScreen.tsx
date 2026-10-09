@@ -1,6 +1,7 @@
 import type { ReactNode } from 'react'
 import type { Account } from '../api/schemas'
 import { assertNever } from '../helpers/assertNever'
+import { QA } from '../helpers/qa'
 import { useAccountsScreen, type AccountsListView } from '../hooks/useAccountsScreen'
 import { AccountRow, AccountRowHeader } from './AccountRow'
 import { AddProvidersDialog } from './AddProvidersDialog'
@@ -39,7 +40,7 @@ export function AccountsScreen({ today }: { today?: Date }) {
         />
 
         <div className="border-t border-line px-5 py-4">
-          <Button variant="secondary" onClick={screen.openAdd} disabled={overview.isLoading}>
+          <Button variant="secondary" data-qa={QA.addProviderButton} onClick={screen.openAdd} disabled={overview.isLoading}>
             + Add provider
           </Button>
         </div>
@@ -74,24 +75,24 @@ interface AccountListBodyProps {
 function AccountListBody({ view, accounts, error, onRetry, onShowAll, onUpload, onRemove }: AccountListBodyProps) {
   switch (view) {
     case 'loading':
-      return <p className="flex items-center gap-3 px-5 py-10 text-muted"><Spinner /> Loading your providers…</p>
+      return <p data-qa={QA.accountsLoading} className="flex items-center gap-3 px-5 py-10 text-muted"><Spinner /> Loading your providers…</p>
 
     case 'error':
       return (
-        <div className="px-5 py-10">
+        <div data-qa={QA.accountsError} className="px-5 py-10">
           <p className="text-bad-600">{error?.message}</p>
-          <Button size="sm" className="mt-3" onClick={onRetry}>Try again</Button>
+          <Button size="sm" className="mt-3" data-qa={QA.accountsRetryButton} onClick={onRetry}>Try again</Button>
         </div>
       )
 
     case 'empty':
-      return <p className="px-5 py-10 text-muted">No providers yet. Add the ones you hold money with.</p>
+      return <p data-qa={QA.accountsEmpty} className="px-5 py-10 text-muted">No providers yet. Add the ones you hold money with.</p>
 
     case 'no-matches':
       return (
-        <div className="px-5 py-10 text-muted">
+        <div data-qa={QA.accountsNoMatches} className="px-5 py-10 text-muted">
           Nothing matches this filter.{' '}
-          <button type="button" className="font-semibold text-navy-900 underline" onClick={onShowAll}>
+          <button type="button" data-qa={QA.showAllButton} className="font-semibold text-navy-900 underline" onClick={onShowAll}>
             Show all
           </button>
         </div>
@@ -101,7 +102,7 @@ function AccountListBody({ view, accounts, error, onRetry, onShowAll, onUpload, 
       return (
         <>
           <AccountRowHeader />
-          <ul aria-label="Your providers" className="divide-y divide-line">
+          <ul aria-label="Your providers" data-qa={QA.accountsList} className="divide-y divide-line">
             {accounts.map((a) => (
               <AccountRow key={a.id} account={a} onUpload={onUpload} onRemove={onRemove} />
             ))}
@@ -117,7 +118,7 @@ function AccountListBody({ view, accounts, error, onRetry, onShowAll, onUpload, 
 function SubmittedConfirmation() {
   return (
     <Shell>
-      <div className="rounded-3xl bg-white p-8 text-center shadow-sm ring-1 ring-line">
+      <div data-qa={QA.submittedConfirmation} className="rounded-3xl bg-white p-8 text-center shadow-sm ring-1 ring-line">
         <div className="mx-auto mb-4 grid size-12 place-items-center rounded-full bg-cyan-50 text-xl text-cyan-700">✓</div>
         <h1 className="font-display text-2xl font-semibold">Statements submitted</h1>
         <p className="mt-2 text-muted">Thanks — your adviser now has everything they need to get started.</p>

@@ -1,4 +1,5 @@
 import type { Account } from '../api/schemas'
+import { QA } from '../helpers/qa'
 import type { ButtonVariant } from '../helpers/styles'
 import { useAccountRow, type StatementSummary } from '../hooks/useAccountRow'
 import { StatusPill } from './StatusPill'
@@ -31,9 +32,9 @@ export function AccountRow({ account, onUpload, onRemove }: Props) {
   const name = account.provider.name
 
   return (
-    <li aria-label={name} className={`${ROW_GRID} items-baseline gap-y-2 py-4`}>
+    <li aria-label={name} data-qa={QA.accountRow} className={`${ROW_GRID} items-baseline gap-y-2 py-4`}>
       <div className="min-w-0">
-        <p className="truncate font-semibold">{name}</p>
+        <p data-qa={QA.accountProviderName} className="truncate font-semibold">{name}</p>
         <p className="text-xs text-muted">{row.categoryLabel}</p>
       </div>
 
@@ -64,11 +65,12 @@ export function AccountRow({ account, onUpload, onRemove }: Props) {
 }
 
 function StatementFile({ statement, onOpen }: { statement: StatementSummary | null; onOpen: () => void }) {
-  if (!statement) return <span>No statement yet</span>
+  if (!statement) return <span data-qa={QA.accountNoStatement}>No statement yet</span>
 
   return (
     <a
       href={statement.href}
+      data-qa={QA.accountStatementLink}
       target="_blank"
       rel="noreferrer"
       // Every click goes through the API (see useOpenStatement); the href is there for hover and "copy link".
@@ -89,13 +91,13 @@ function StatementDate({ statement }: { statement: StatementSummary | null }) {
   if (!statement) return <div className="hidden sm:block" />
 
   return (
-    <div className={`col-span-2 flex items-center gap-1.5 text-xs sm:col-span-1 ${statement.ageNote ? 'text-warn-600' : 'text-muted'}`}>
+    <div data-qa={QA.accountStatementDate} className={`col-span-2 flex items-center gap-1.5 text-xs sm:col-span-1 ${statement.ageNote ? 'text-warn-600' : 'text-muted'}`}>
       <span>
         {/* Visible on phones, where there is no header row; read out everywhere. */}
         <span className="sm:sr-only">Dated </span>
         {statement.dateLabel}
       </span>
-      {statement.ageNote && <InfoTip label="Why is this outdated?" text={statement.ageNote} />}
+      {statement.ageNote && <InfoTip label="Why is this outdated?" text={statement.ageNote} qa={QA.accountOutdatedInfo} />}
     </div>
   )
 }
@@ -119,16 +121,16 @@ function RowActions(props: RowActionsProps) {
     return (
       <>
         <span className="mr-1 text-xs text-muted">Remove?</span>
-        <Button size="sm" variant="danger" onClick={onConfirmRemove}>Yes, remove</Button>
-        <Button size="sm" variant="ghost" onClick={onCancelRemove}>Cancel</Button>
+        <Button size="sm" variant="danger" data-qa={QA.accountConfirmRemoveButton} onClick={onConfirmRemove}>Yes, remove</Button>
+        <Button size="sm" variant="ghost" data-qa={QA.accountCancelRemoveButton} onClick={onCancelRemove}>Cancel</Button>
       </>
     )
   }
 
   return (
     <>
-      <Button size="sm" variant={actionVariant} onClick={onUpload}>{actionLabel}</Button>
-      <Button size="sm" variant="ghost" aria-label={`Remove ${name}`} onClick={onRequestRemove}>
+      <Button size="sm" variant={actionVariant} data-qa={QA.accountUploadButton} onClick={onUpload}>{actionLabel}</Button>
+      <Button size="sm" variant="ghost" aria-label={`Remove ${name}`} data-qa={QA.accountRemoveButton} onClick={onRequestRemove}>
         <span aria-hidden="true" className="text-base leading-none">×</span>
       </Button>
     </>

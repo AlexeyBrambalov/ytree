@@ -1,6 +1,7 @@
 import type { Provider } from '../api/schemas'
 import { assertNever } from '../helpers/assertNever'
 import { CATEGORY_LABEL } from '../helpers/labels'
+import { QA } from '../helpers/qa'
 import { useAddProvidersDialog, type ProviderOptionsView } from '../hooks/useAddProvidersDialog'
 import { Button } from './ui/Button'
 import { Modal } from './ui/Modal'
@@ -11,13 +12,14 @@ export function AddProvidersDialog({ onClose }: { onClose: () => void }) {
 
   return (
     <Modal
+      qa={QA.addProvidersDialog}
       title="Add providers"
       description="Pick every bank, pension or investment platform you hold money with."
       onClose={onClose}
       footer={
         <>
-          <Button variant="ghost" onClick={onClose}>Cancel</Button>
-          <Button variant="primary" disabled={!dialog.canConfirm} loading={dialog.isAdding} onClick={dialog.add}>
+          <Button variant="ghost" data-qa={QA.addProvidersCancelButton} onClick={onClose}>Cancel</Button>
+          <Button variant="primary" data-qa={QA.addProvidersConfirmButton} disabled={!dialog.canConfirm} loading={dialog.isAdding} onClick={dialog.add}>
             {dialog.confirmLabel}
           </Button>
         </>
@@ -25,6 +27,7 @@ export function AddProvidersDialog({ onClose }: { onClose: () => void }) {
     >
       <input
         type="search"
+        data-qa={QA.providerSearch}
         value={dialog.query}
         onChange={(e) => dialog.setQuery(e.target.value)}
         placeholder="Search providers"
@@ -33,7 +36,7 @@ export function AddProvidersDialog({ onClose }: { onClose: () => void }) {
       />
 
       {dialog.addError && (
-        <p role="alert" className="mt-3 rounded-2xl bg-bad-50 px-4 py-2 text-sm text-bad-600">{dialog.addError.message}</p>
+        <p role="alert" data-qa={QA.addProvidersError} className="mt-3 rounded-2xl bg-bad-50 px-4 py-2 text-sm text-bad-600">{dialog.addError.message}</p>
       )}
 
       <div className="mt-3 min-h-48">
@@ -75,21 +78,22 @@ function ProviderOptions({ view, providers, selectedIds, loadError, emptyMessage
       )
 
     case 'empty':
-      return <p className="py-6 text-sm text-muted">{emptyMessage}</p>
+      return <p data-qa={QA.providersEmpty} className="py-6 text-sm text-muted">{emptyMessage}</p>
 
     case 'list':
       return (
         <ul className="divide-y divide-line">
           {providers.map((p) => (
             <li key={p.id}>
-              <label className="flex cursor-pointer items-center gap-3 rounded-xl px-2 py-2.5 hover:bg-navy-50">
+              <label data-qa={QA.providerOption} className="flex cursor-pointer items-center gap-3 rounded-xl px-2 py-2.5 hover:bg-navy-50">
                 <input
                   type="checkbox"
+                  data-qa={QA.providerCheckbox}
                   checked={selectedIds.includes(p.id)}
                   onChange={() => onToggle(p.id)}
                   className="size-4 accent-navy-900"
                 />
-                <span className="flex-1 text-sm font-medium">{p.name}</span>
+                <span data-qa={QA.providerOptionName} className="flex-1 text-sm font-medium">{p.name}</span>
                 <span className="text-xs text-muted">{CATEGORY_LABEL[p.category]}</span>
               </label>
             </li>

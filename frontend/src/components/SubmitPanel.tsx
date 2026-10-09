@@ -2,6 +2,7 @@ import { useId } from 'react'
 import type { SubmissionProblem } from '../api/schemas'
 import { readinessMessage, type Readiness } from '../domain/readiness'
 import { describeProblem } from '../helpers/labels'
+import { QA } from '../helpers/qa'
 import { Button } from './ui/Button'
 
 interface Props {
@@ -18,12 +19,13 @@ export function SubmitPanel({ readiness, isSubmitting, problems, error, onSubmit
   return (
     <div className="space-y-3">
       <ProblemList problems={problems} />
-      {error && <p role="alert" className="rounded-2xl bg-bad-50 px-5 py-3 text-sm text-bad-600">{error.message}</p>}
+      {error && <p role="alert" data-qa={QA.submissionError} className="rounded-2xl bg-bad-50 px-5 py-3 text-sm text-bad-600">{error.message}</p>}
 
       <div className="flex flex-col-reverse items-stretch gap-3 sm:flex-row sm:items-center sm:justify-end">
-        <p id={hintId} className={`text-sm ${hintTone(readiness)}`}>{readinessMessage(readiness)}</p>
+        <p id={hintId} data-qa={QA.readinessHint} className={`text-sm ${hintTone(readiness)}`}>{readinessMessage(readiness)}</p>
         <Button
           variant="primary"
+          data-qa={QA.submitButton}
           disabled={!readiness.canSubmit}
           loading={isSubmitting}
           aria-describedby={hintId}
@@ -47,7 +49,7 @@ function ProblemList({ problems }: { problems: SubmissionProblem[] }) {
   if (problems.length === 0) return null
 
   return (
-    <div role="alert" className="rounded-2xl bg-bad-50 px-5 py-4 text-sm text-bad-600">
+    <div role="alert" data-qa={QA.submissionProblems} className="rounded-2xl bg-bad-50 px-5 py-4 text-sm text-bad-600">
       <p className="font-semibold">We couldn’t accept your submission yet:</p>
       <ul className="mt-1 list-disc pl-5">
         {problems.map((p, i) => (
